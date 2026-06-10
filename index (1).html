@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Subway Surfers Score Calculator — Estimate Your Final Score</title>
+  <meta name="description" content="Use our free Subway Surfers Score Calculator to estimate your final score based on multiplier, coins, hoverboard usage, and bonuses. Get tips to maximize your run!" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://subwayscore.vercel.app/" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Subway Surfers Score Calculator" />
+  <meta property="og:description" content="Estimate your Subway Surfers score instantly. Enter your multiplier, coins, and bonuses to see your final score and get tips." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://subwayscore.vercel.app/" />
+
+  <!-- FAQ Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How is the Subway Surfers score calculated?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Your score is calculated by multiplying the distance you run by your score multiplier. Coins, mystery box bonuses, and hoverboard usage add extra points on top of the base score."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I increase my score multiplier in Subway Surfers?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You can increase your multiplier by completing weekly hunts, finishing mission cards, and leveling up your characters and hoverboards."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does using a hoverboard increase your score?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. A hoverboard saves you from crashing and keeps your run alive, which means more distance covered and a higher final score."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the highest possible score multiplier?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The maximum score multiplier in Subway Surfers is 30x, achievable through consistent mission completions and character upgrades."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is this score calculator official?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No, this is a fan-made estimation tool based on how Subway Surfers scoring mechanics work. It is not affiliated with SYBO Games."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+    :root {
+      --bg: #0d0f1a;
+      --surface: #151828;
+      --card: #1c2035;
+      --border: #252a42;
+      --accent: #f7c948;
+      --accent2: #ff6b35;
+      --text: #e8eaf0;
+      --muted: #7a7f9a;
+      --green: #3ddc84;
+      --radius: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .logo {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.5px;
+    }
+    .logo span { color: var(--text); }
+    .header-link {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .header-link:hover { color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0d0f1a 0%, #1a1030 50%, #0d1520 100%);
+      padding: 64px 24px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(247,201,72,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      background: rgba(247,201,72,0.12);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(247,201,72,0.2);
+    }
+    .hero h1 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── CALCULATOR CARD ── */
+    .calc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-top: -20px;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .calc-grid { grid-template-columns: 1fr; }
+      .calc-card { padding: 24px 18px; }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .field label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .field input, .field select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--accent);
+    }
+    .field input::placeholder { color: var(--muted); }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--border);
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      height: 18px; width: 18px;
+      left: 3px; top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.25s;
+    }
+    .toggle input:checked + .toggle-slider { background: var(--accent); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+    .toggle-label { font-size: 0.9rem; color: var(--text); }
+
+    .calc-btn {
+      margin-top: 28px;
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      color: #0d0f1a;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .calc-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .calc-btn:active { transform: translateY(0); }
+
+    /* ── RESULTS ── */
+    .results {
+      display: none;
+      margin-top: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      animation: fadeUp 0.3s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .results.show { display: block; }
+
+    .result-score {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .result-score .label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .result-score .number {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 3.8rem);
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .result-score .rating-badge {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .badge-bronze  { background: rgba(205,127,50,0.18); color: #cd7f32; border: 1px solid rgba(205,127,50,0.3); }
+    .badge-silver  { background: rgba(192,192,192,0.15); color: #c0c0c0; border: 1px solid rgba(192,192,192,0.3); }
+    .badge-gold    { background: rgba(247,201,72,0.15); color: var(--accent); border: 1px solid rgba(247,201,72,0.3); }
+    .badge-legendary { background: rgba(255,107,53,0.15); color: var(--accent2); border: 1px solid rgba(255,107,53,0.3); }
+
+    .result-breakdown {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 500px) { .result-breakdown { grid-template-columns: 1fr 1fr; } }
+
+    .breakdown-item {
+      background: var(--card);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    .breakdown-item .b-val {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+    .breakdown-item .b-lbl {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .tip-box {
+      background: rgba(247,201,72,0.07);
+      border: 1px solid rgba(247,201,72,0.2);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .tip-box strong { color: var(--accent); }
+
+    .guide-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,107,53,0.08);
+      border: 1px solid rgba(255,107,53,0.2);
+      border-radius: 8px;
+      padding: 14px 16px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .guide-cta:hover { background: rgba(255,107,53,0.14); }
+    .guide-cta .cta-icon { font-size: 1.5rem; }
+    .guide-cta .cta-text { flex: 1; }
+    .guide-cta .cta-title { font-weight: 600; font-size: 0.95rem; color: var(--text); }
+    .guide-cta .cta-sub { font-size: 0.8rem; color: var(--muted); }
+    .guide-cta .cta-arrow { color: var(--accent2); font-size: 1.1rem; }
+
+    /* ── CONTENT SECTIONS ── */
+    .section { margin-top: 60px; }
+    .section h2 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section h3 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 20px 0 8px;
+    }
+    .section p { color: var(--muted); margin-bottom: 12px; font-size: 0.95rem; }
+    .section p a { color: var(--accent); text-decoration: none; }
+    .section p a:hover { text-decoration: underline; }
+
+    /* How to use steps */
+    .steps { counter-reset: step; display: flex; flex-direction: column; gap: 14px; }
+    .step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .step-num {
+      width: 32px; height: 32px;
+      background: var(--accent);
+      color: #0d0f1a;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .step-text { font-size: 0.92rem; color: var(--text); line-height: 1.5; }
+    .step-text strong { color: var(--accent); }
+
+    /* Tips grid */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    @media (max-width: 600px) { .tips-grid { grid-template-columns: 1fr; } }
+    .tip-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+    }
+    .tip-card .tip-icon { font-size: 1.4rem; margin-bottom: 8px; }
+    .tip-card h4 { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1rem; color: #fff; margin-bottom: 6px; }
+    .tip-card p { font-size: 0.85rem; color: var(--muted); margin: 0; }
+    .tip-card p a { color: var(--accent); text-decoration: none; }
+
+    /* Scoring table */
+    .score-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
+    .score-table th {
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .score-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    .score-table tr:last-child td { border-bottom: none; }
+    .score-table tr:hover td { background: var(--card); }
+
+    /* FAQ */
+    .faq { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+    .faq-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .faq-q {
+      padding: 16px 18px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    .faq-q:hover { color: var(--accent); }
+    .faq-q .faq-arrow { color: var(--muted); font-size: 0.8rem; transition: transform 0.2s; }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); }
+    .faq-a {
+      display: none;
+      padding: 0 18px 16px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.65;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    .faq-item.open .faq-a { display: block; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+      margin-top: 80px;
+    }
+    .footer-inner { max-width: 960px; margin: 0 auto; }
+    .footer-brand {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .footer-brand a { color: var(--accent); text-decoration: none; }
+    .footer-brand a:hover { text-decoration: underline; }
+    .footer-note { font-size: 0.78rem; color: var(--muted); }
+    .footer-note a { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <a href="https://subsurfapps.com" class="logo" target="_blank" rel="noopener">
+        Subsurf<span>Apps</span>
+      </a>
+      <a href="https://subsurfapps.com" class="header-link" target="_blank" rel="noopener">
+        More Subway Surfers Guides →
+      </a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Free Tool</div>
+    <h1>Subway Surfers<br /><em>Score Calculator</em></h1>
+    <p>Enter your run details and instantly estimate your final score — with tips to push it higher.</p>
+  </div>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- CALCULATOR -->
+    <div class="calc-card">
+      <div class="calc-grid">
+
+        <div class="field">
+          <label>Base Score (Distance Points)</label>
+          <input type="number" id="baseScore" placeholder="e.g. 150000" min="0" />
+        </div>
+
+        <div class="field">
+          <label>Score Multiplier</label>
+          <select id="multiplier">
+            <option value="1">1x</option>
+            <option value="2">2x</option>
+            <option value="3">3x</option>
+            <option value="4">4x</option>
+            <option value="5" selected>5x</option>
+            <option value="6">6x</option>
+            <option value="7">7x</option>
+            <option value="8">8x</option>
+            <option value="10">10x</option>
+            <option value="12">12x</option>
+            <option value="15">15x</option>
+            <option value="20">20x</option>
+            <option value="25">25x</option>
+            <option value="30">30x (Max)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Coins Collected</label>
+          <input type="number" id="coins" placeholder="e.g. 2500" min="0" />
+        </div>
+
+        <div class="field">
+          <label>Mystery Box Bonus</label>
+          <input type="number" id="bonus" placeholder="e.g. 10000" min="0" />
+        </div>
+
+        <div class="field">
+          <label>Hoverboard Used?</label>
+          <div class="toggle-row">
+            <label class="toggle">
+              <input type="checkbox" id="hoverboard" />
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Yes — saved my run</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Coin Magnet Active?</label>
+          <div class="toggle-row">
+            <label class="toggle">
+              <input type="checkbox" id="magnet" />
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Yes — collected more coins</span>
+          </div>
+        </div>
+
+      </div>
+
+      <button class="calc-btn" onclick="calculate()">Calculate My Score</button>
+
+      <!-- RESULTS -->
+      <div class="results" id="results">
+        <div class="result-score">
+          <div class="label">Estimated Final Score</div>
+          <div class="number" id="finalScore">0</div>
+          <div id="ratingBadge" class="rating-badge"></div>
+        </div>
+
+        <div class="result-breakdown">
+          <div class="breakdown-item">
+            <div class="b-val" id="bBase">0</div>
+            <div class="b-lbl">Base Score</div>
+          </div>
+          <div class="breakdown-item">
+            <div class="b-val" id="bMultiplied">0</div>
+            <div class="b-lbl">After Multiplier</div>
+          </div>
+          <div class="breakdown-item">
+            <div class="b-val" id="bCoins">0</div>
+            <div class="b-lbl">Coin Bonus</div>
+          </div>
+        </div>
+
+        <div class="tip-box" id="tipBox"></div>
+
+        <a href="https://subsurfapps.com/subway-surfers-hoverboard/" class="guide-cta" target="_blank" rel="noopener">
+          <span class="cta-icon">🛹</span>
+          <div class="cta-text">
+            <div class="cta-title">Boost Your Score With The Right Hoverboard</div>
+            <div class="cta-sub">Read the complete Hoverboard Guide on SubsurfApps.com</div>
+          </div>
+          <span class="cta-arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- HOW TO USE -->
+    <div class="section">
+      <h2>How To Use This Calculator</h2>
+      <p>Getting your estimated score takes less than 30 seconds. Here is exactly what to do:</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Enter your <strong>Base Score</strong> — this is the raw distance points you see during a run, before the multiplier is applied.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Select your current <strong>Score Multiplier</strong> from the dropdown. You can find this on your profile screen in-game.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Enter the number of <strong>Coins</strong> you collected during the run. Each coin adds a small bonus to your final total.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">Add any <strong>Mystery Box Bonus</strong> you received. If you did not open one this run, leave it at zero.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-text">Toggle <strong>Hoverboard</strong> and <strong>Coin Magnet</strong> if you used them — these affect your coin count and survival bonus. Then hit Calculate.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOW SCORING WORKS -->
+    <div class="section">
+      <h2>How Scoring Works in Subway Surfers</h2>
+      <p>Subway Surfers uses a layered scoring system that rewards players who run farther, collect more coins, and maintain consistency across missions. Understanding it gives you a real advantage.</p>
+
+      <h3>The Multiplier Is Everything</h3>
+      <p>Your score multiplier is the single most powerful factor in your final score. At 1x, running 100,000 meters gives you 100,000 points. At 10x, the same run gives you 1,000,000. This is why veteran players always focus on maxing their multiplier before chasing high scores. You build it by completing mission cards and weekly challenges — not by playing longer sessions.</p>
+
+      <h3>Coins vs Score: What Is the Difference?</h3>
+      <p>Coins and score are two separate currencies. Coins are collected mid-run and used to buy characters, hoverboards, and upgrades in the shop. Your score reflects how far you ran, multiplied by your current multiplier, plus bonuses. A coin magnet power-up does not directly inflate your score — but it increases your coin haul, which adds a coin bonus at the end of the run.</p>
+
+      <h3>Hoverboard Effect on Score</h3>
+      <p>A hoverboard does not add points directly, but it extends your run by absorbing one crash. A longer run means more distance, more coins, and a significantly higher base score. This is especially impactful when your multiplier is high. For a full breakdown of which hoverboards give the best advantage, see the <a href="https://subsurfapps.com/subway-surfers-hoverboard/" target="_blank" rel="noopener">complete Hoverboard Guide on SubsurfApps.com</a>.</p>
+
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>Multiplier</th>
+            <th>Base Score 100K</th>
+            <th>Base Score 500K</th>
+            <th>Base Score 1M</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>5x</td><td>500,000</td><td>2,500,000</td><td>5,000,000</td></tr>
+          <tr><td>10x</td><td>1,000,000</td><td>5,000,000</td><td>10,000,000</td></tr>
+          <tr><td>20x</td><td>2,000,000</td><td>10,000,000</td><td>20,000,000</td></tr>
+          <tr><td>30x</td><td>3,000,000</td><td>15,000,000</td><td>30,000,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TIPS TO MAXIMIZE -->
+    <div class="section">
+      <h2>Tips To Maximize Your Score</h2>
+      <p>These six strategies will consistently push your score higher regardless of which board or character you use.</p>
+      <div class="tips-grid">
+        <div class="tip-card">
+          <div class="tip-icon">⚡</div>
+          <h4>Prioritize Multiplier Over Everything</h4>
+          <p>Complete mission cards as fast as possible. Each card set increases your multiplier. A player at 15x will always outscore a player at 5x, even if the 5x player runs twice as far.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🛹</div>
+          <h4>Use Hoverboards on Long Runs</h4>
+          <p>Save hoverboards for runs where your multiplier is maxed and you want to push distance. <a href="https://subsurfapps.com/subway-surfers-hoverboard/" target="_blank" rel="noopener">Read the hoverboard guide</a> to pick the right board for each situation.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🧲</div>
+          <h4>Activate Coin Magnet Early</h4>
+          <p>Use the coin magnet at the start of your run when coins are densest. The end-of-run coin bonus compounds with your base score for a meaningful total boost.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">📅</div>
+          <h4>Complete Weekly Hunts</h4>
+          <p>Weekly hunts are the fastest way to earn mission card XP and push your multiplier higher. Set a reminder and clear them before they reset every Sunday.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🎯</div>
+          <h4>Focus on One Character</h4>
+          <p>Upgrading one character fully gives better score bonuses than spreading upgrades thin across many. Pick a favourite and max them out first.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🎁</div>
+          <h4>Open Mystery Boxes Mid-Run</h4>
+          <p>Mystery boxes can grant power-ups that activate immediately, extending your run and adding bonus points. Do not skip them when they appear on the track.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq">
+
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            How is the Subway Surfers score calculated?
+            <span class="faq-arrow">▼</span>
+          </div>
+          <div class="faq-a">Your score is calculated by multiplying the distance you run by your score multiplier. Coins, mystery box bonuses, and hoverboard usage add extra points on top of the base score. This calculator estimates your total based on all those combined inputs.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            How do I increase my score multiplier in Subway Surfers?
+            <span class="faq-arrow">▼</span>
+          </div>
+          <div class="faq-a">You increase your multiplier by completing mission card sets. Each completed set gives you +1 to your multiplier. Weekly hunts and special events also reward mission XP, making them the fastest way to level up your multiplier.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Does using a hoverboard increase your score?
+            <span class="faq-arrow">▼</span>
+          </div>
+          <div class="faq-a">Yes, indirectly. A hoverboard absorbs one crash and keeps your run alive. More distance covered means a higher base score, which then gets multiplied. The longer your run, the bigger the impact. See the full hoverboard guide on SubsurfApps.com for details on which boards last longest.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            What is the highest possible score multiplier?
+            <span class="faq-arrow">▼</span>
+          </div>
+          <div class="faq-a">The maximum score multiplier in Subway Surfers is 30x, achievable by completing all available mission card sets. Reaching 30x takes time but completely transforms your scores — a 30x player scoring 500K base will hit 15 million points on the same run a 5x player would score 2.5 million.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Is this score calculator official?
+            <span class="faq-arrow">▼</span>
+          </div>
+          <div class="faq-a">No, this is a fan-made estimation tool based on Subway Surfers' known scoring mechanics. It is not affiliated with or endorsed by SYBO Games. Actual in-game scores may vary slightly depending on game version and specific event bonuses.</div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        A free tool by <a href="https://subsurfapps.com" target="_blank" rel="noopener">SubsurfApps.com</a> — Your #1 Source for Subway Surfers Guides
+      </div>
+      <div class="footer-note">
+        Not affiliated with SYBO Games. Subway Surfers is a trademark of SYBO Games. &nbsp;|&nbsp;
+        <a href="https://subsurfapps.com/subway-surfers-hoverboard/" target="_blank" rel="noopener">Hoverboard Guide</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function formatNum(n) {
+      return Math.round(n).toLocaleString('en-US');
+    }
+
+    function calculate() {
+      const base      = parseFloat(document.getElementById('baseScore').value) || 0;
+      const mult      = parseFloat(document.getElementById('multiplier').value) || 1;
+      const coins     = parseFloat(document.getElementById('coins').value) || 0;
+      const bonus     = parseFloat(document.getElementById('bonus').value) || 0;
+      const hoverboard = document.getElementById('hoverboard').checked;
+      const magnet    = document.getElementById('magnet').checked;
+
+      if (base === 0) {
+        alert('Please enter your base score to continue.');
+        return;
+      }
+
+      const multiplied  = base * mult;
+      const coinBonus   = coins * (magnet ? 1.5 : 1);
+      const hoverBonus  = hoverboard ? multiplied * 0.12 : 0;
+      const finalScore  = multiplied + coinBonus + bonus + hoverBonus;
+
+      // Rating
+      let rating, badgeClass;
+      if (finalScore < 500000)        { rating = 'Bronze';    badgeClass = 'badge-bronze'; }
+      else if (finalScore < 2000000)  { rating = 'Silver';    badgeClass = 'badge-silver'; }
+      else if (finalScore < 8000000)  { rating = 'Gold';      badgeClass = 'badge-gold'; }
+      else                            { rating = 'Legendary'; badgeClass = 'badge-legendary'; }
+
+      // Tip
+      let tip = '';
+      if (mult < 10)       tip = `<strong>💡 Tip:</strong> Your multiplier is ${mult}x. Completing more mission cards can push it to 10x+ — that alone would multiply your score by ${(10/mult).toFixed(1)}x from the same run.`;
+      else if (mult < 20)  tip = `<strong>💡 Tip:</strong> You're at ${mult}x. Getting to 20x would nearly double your score. Focus on weekly hunts this week to close the gap.`;
+      else if (!hoverboard) tip = `<strong>💡 Tip:</strong> You have a strong multiplier but didn't use a hoverboard. On a high-multiplier run, surviving an extra few seconds is worth a huge score jump.`;
+      else                 tip = `<strong>💡 Tip:</strong> Great run! To push further, try maximizing your base distance — longer runs multiply into massive totals at ${mult}x.`;
+
+      // Update DOM
+      document.getElementById('finalScore').textContent = formatNum(finalScore);
+      document.getElementById('bBase').textContent = formatNum(base);
+      document.getElementById('bMultiplied').textContent = formatNum(multiplied);
+      document.getElementById('bCoins').textContent = formatNum(coinBonus + bonus + hoverBonus);
+
+      const badge = document.getElementById('ratingBadge');
+      badge.textContent = rating;
+      badge.className = 'rating-badge ' + badgeClass;
+
+      document.getElementById('tipBox').innerHTML = tip;
+
+      const results = document.getElementById('results');
+      results.classList.add('show');
+      results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function toggleFaq(el) {
+      const item = el.parentElement;
+      item.classList.toggle('open');
+    }
+  </script>
+
+</body>
+</html>
